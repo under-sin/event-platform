@@ -8,3 +8,5 @@
 - Hygraph
 - Graphql-code-generator
 - Vercel
+
+link: https://event-platform-nu-three.vercel.app/
