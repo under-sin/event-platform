@@ -9,47 +9,20 @@ import {
 
 import '@vime/core/themes/default.css'
 import { gql, useQuery } from '@apollo/client'
-
-const GET_LESSON_BY_SLUG_QUERY = gql`
-  query GetLessonBySlug($slug: String) {
-    lesson(where: { slug: $slug }) {
-      videoId
-      title
-      description
-      teacher {
-        bio
-        name
-        avatarURL
-      }
-    }
-  }
-`
-
-interface GetLessonBySlugResponse {
-  lesson: {
-    videoId: string
-    title: string
-    description: string
-    teacher: {
-      bio: string
-      name: string
-      avatarURL: string
-    }
-  }
-}
+import { useGetLessonBySlugQuery } from '../graphql/generated'
 
 interface VideoSlug {
   lessonSlug: string
 }
 
 export function Video(props: VideoSlug) {
-  const { data } = useQuery<GetLessonBySlugResponse>(GET_LESSON_BY_SLUG_QUERY, {
+  const { data } = useGetLessonBySlugQuery({
     variables: {
       slug: props.lessonSlug
     }
   })
 
-  if (!data) {
+  if (!data || !data.lesson) {
     return (
       <div className="flex-1">
         <p>carregando...</p>
@@ -76,7 +49,8 @@ export function Video(props: VideoSlug) {
               {data.lesson.description}
             </p>
 
-            <div className="flex items-center gap-4 mt-6 ">
+            {data.lesson.teacher && (
+              <div className="flex items-center gap-4 mt-6 ">
               <img
                 className="h-16 w-16 rounded-full border-[3px] border-blue-500"
                 src={data.lesson.teacher.avatarURL}
@@ -91,6 +65,7 @@ export function Video(props: VideoSlug) {
                 </span>
               </div>
             </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-4">
